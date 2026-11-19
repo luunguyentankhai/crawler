@@ -1,0 +1,11 @@
+[project]
+name = "fuo-crawler"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "playwright>=1.64.1",
+    "python-dotenv>=1.2.4",
+    "tqdm>=4.70.1",
+]
