@@ -4,7 +4,8 @@ Tải ảnh câu hỏi theo mã môn từ fuoverflow.com, tải comment dưới 
 
 ## Cài đặt
 
-Cần Python >= 3.11, [uv](https://docs.astral.sh/uv/) và trình duyệt Brave (hoặc Chromium khác).
+Cần Python >= 3.11, [uv](https://docs.astral.sh/uv/) và một trình duyệt nền Chromium (Brave, Chrome, Chromium hoặc Edge).
+Code tự dò trình duyệt trên Linux, macOS và Windows; không tìm thấy thì đặt `BROWSER_PATH`.
 
 ```sh
 uv sync
@@ -12,15 +13,23 @@ uv sync
 
 Tạo file `.env` ở thư mục gốc:
 
+```sh
+cp .env.example .env
 ```
-FUO_BASE_URL=https://fuoverflow.com
-BROWSER_PATH=/usr/bin/brave   # tùy chọn, mặc định /usr/bin/brave
-HEADLESS=1                    # tùy chọn, 0 = hiện cửa sổ trình duyệt
-```
+
+### Tìm đường dẫn trình duyệt (`BROWSER_PATH`)
+
+Báo không tìm thấy, hoặc chọn trình duyệt khác:
+
+1. Mở trình duyệt, gõ vào thanh địa chỉ `chrome://version` (Brave: `brave://version`, Edge: `edge://version`).
+2. Copy dòng **Executable Path** (tiếng Việt: Đường dẫn thực thi).
+3. Dán vào `.env`, ví dụ `BROWSER_PATH=C:\Program Files\Google\Chrome\Application\chrome.exe`.
+
+Chỉ dùng được trình duyệt nền Chromium.
 
 ## Cách dùng
 
-1. Đăng nhập Google một lần (mở cửa sổ Brave, đăng nhập xong thì đóng lại):
+1. Đăng nhập Google một lần (mở trình duyệt, đăng nhập xong thì đóng lại):
 
    ```sh
    uv run main.py login
@@ -32,34 +41,9 @@ HEADLESS=1                    # tùy chọn, 0 = hiện cửa sổ trình duyệ
 2. Chạy toàn bộ (ảnh → comment → đáp án):
 
    ```sh
-   ./crawl.sh CSI106 PRF192        # các môn chỉ định
-   ./crawl.sh                      # mọi môn trong subjects.txt (mỗi dòng một mã, # là ghi chú)
-   ./crawl.sh CSI106 --limit 2     # tham số thêm chuyển cho `main.py crawl`
+   uv run main.py all <mã môn 1> <mã môn 2>      # các môn chỉ định
+   uv run main.py all                    # mọi môn trong subjects.txt (mỗi dòng một mã, # là ghi chú)
+   uv run main.py all <mã môn> --limit 2   # tối đa 2 thread mỗi môn
    ```
 
-Hoặc chạy từng bước:
 
-| Lệnh | Việc làm |
-|---|---|
-| `uv run main.py crawl CSI106 [--limit N]` | tải ảnh, tối đa N thread mỗi môn |
-| `uv run main.py comments CSI106` | tải comment của ảnh (cần `meta.json` từ bước crawl) |
-| `uv run main.py answers CSI106` | offline: chọn đáp án, ghi `answers.json` và `review.md` |
-| `uv run main.py renumber [thư mục]` | đổi tên file cũ `<id>-tên` thành `Q1`, `Q2`, ... |
-
-## Kết quả
-
-Trong `images/<MÃ_MÔN>/`:
-
-- `<thread>/Q1.webp, Q2.webp, ...`: ảnh câu hỏi
-- `<thread>/comments.json`, `<thread>/answers.json`: comment và đáp án đã chọn (kèm votes, confidence)
-- `review.md`: các câu cần kiểm tra tay (hòa phiếu, comment mâu thuẫn, không có đáp án)
-
-Log mỗi lần chạy nằm ở `logs/`.
-
-## Test
-
-```sh
-FUO_BASE_URL=https://fuoverflow.com uv run python test_fuo.py
-```
-
-Test chạy offline, không cần đăng nhập hay trình duyệt. CI (`.github/workflows/test.yml`) chạy cùng lệnh này cho mỗi push và pull request.
