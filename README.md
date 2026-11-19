@@ -1,7 +1,3 @@
-# FUO Crawler
-
-Tải ảnh câu hỏi theo mã môn từ fuoverflow.com, tải comment dưới ảnh, rồi chọn đáp án bằng bình chọn đa số.
-
 ## Cài đặt
 
 Cần Python >= 3.11, [uv](https://docs.astral.sh/uv/) và một trình duyệt nền Chromium (Brave, Chrome, Chromium hoặc Edge).
